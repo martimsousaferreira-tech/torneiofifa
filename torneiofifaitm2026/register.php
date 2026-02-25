@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once "db_connect.php";
+require_once "config.php";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nome = isset($_POST['nome']) ? htmlspecialchars($_POST['nome']) : '';
@@ -25,7 +25,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($stmt->execute()) {
             $_SESSION['user_id'] = $stmt->insert_id;
             $_SESSION['user_name'] = $nome;
-            header("Location: index.php");
+            header("Location: ./");
             exit;
         } else {
             $error = "Erro ao criar conta.";
@@ -61,10 +61,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <button type="submit" class="btn form-submit">Registar</button>
         </form>
         <p style="text-align: center; margin-top: 1rem; color: var(--text-secondary);">
-            Já tens conta? <a href="login.php" style="color: var(--accent-color);">Login</a>
+            Já tens conta? <a href="login" style="color: var(--accent-color);">Login</a>
         </p>
         <p style="text-align: center; margin-top: 1rem;">
-            <a href="index.php" style="color: var(--text-secondary); font-size: 0.9rem;">Voltar ao site</a>
+            <a href="./" style="color: var(--text-secondary); font-size: 0.9rem;">Voltar ao site</a>
         </p>
     </div>
 </body>

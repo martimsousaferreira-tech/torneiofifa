@@ -1,18 +1,19 @@
 <?php
 session_start();
 if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php");
+    header("Location: login");
     exit;
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    require_once "db_connect.php";
+    require_once "config.php";
 
     $nome = isset($_POST['nome']) ? htmlspecialchars($_POST['nome']) : '';
     $ano = isset($_POST['ano']) ? htmlspecialchars($_POST['ano']) : '';
     $turma_letra = isset($_POST['turma_letra']) ? htmlspecialchars($_POST['turma_letra']) : '';
     $turma = "$ano $turma_letra"; // Combine to store in DB
-    $numero = isset($_POST['numero']) ? htmlspecialchars($_POST['numero']) : '';
+    $numero = isset($_POST['numero']) ? (int)$_POST['numero'] : 0;
+    $telemovel = isset($_POST['telemovel']) ? htmlspecialchars($_POST['telemovel']) : '';
     
     // Validation for years and courses
     $allowed_anos = ['10º', '11º', '12º'];
@@ -23,6 +24,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $error = true;
     } elseif (strlen($nome) > 11) {
         $message = "O nome não pode exceder os 11 caracteres.";
+        $error = true;
+    } elseif ($numero < 1 || $numero > 30) {
+        $message = "O número de aluno deve estar entre 1 e 30.";
         $error = true;
     } elseif (!in_array($ano, $allowed_anos) || !in_array($turma_letra, $allowed_cursos)) {
         $message = "Inscrição inválida. Apenas alunos do 10º ao 12º ano dos cursos técnicos especificados podem participar.";
@@ -62,12 +66,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         'msg' => 'Desculpa, as inscrições já atingiram o limite de 32 jogadores.',
                         'type' => 'warning'
                     ];
-                    header("Location: index.php#inscricao");
+                    header("Location: ./#inscricao");
                     exit;
                 } else {
                     // Prepare and bind
-                    $stmt = $conn->prepare("INSERT INTO inscricoes (user_id, nome, turma, numero, email) VALUES (?, ?, ?, ?, ?)");
-                    $stmt->bind_param("issis", $user_id, $nome, $turma, $numero, $email);
+                    $stmt = $conn->prepare("INSERT INTO inscricoes (user_id, nome, turma, numero, email, telemovel) VALUES (?, ?, ?, ?, ?, ?)");
+                    $stmt->bind_param("ississ", $user_id, $nome, $turma, $numero, $email, $telemovel);
 
                     if ($stmt->execute()) {
                         $message = "Inscrição realizada com sucesso, $nome!";
@@ -83,7 +87,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if (isset($error) && $error) {
         $_SESSION['toast'] = ['msg' => $message, 'type' => 'error'];
-        header("Location: index.php#inscricao");
+        header("Location: ./#inscricao");
         exit;
     }
     $conn->close();
@@ -129,9 +133,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <?php endif; ?>
         
         <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-            <a href="index.php" class="btn">Voltar ao Início</a>
+            <a href="./" class="btn">Voltar ao Início</a>
             <?php if(!isset($error)): ?>
-                <a href="index.php#classificacoes" class="btn btn-outline" style="clip-path: none; border-radius: 5px;">Ver Bracket</a>
+                <a href="./#classificacoes" class="btn btn-outline" style="clip-path: none; border-radius: 50px;">Ver Bracket</a>
             <?php endif; ?>
         </div>
     </div>

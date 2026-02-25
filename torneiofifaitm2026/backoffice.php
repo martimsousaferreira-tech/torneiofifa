@@ -1,9 +1,9 @@
 <?php
 session_start();
-require_once "db_connect.php";
+require_once "config.php";
 
 if (!isset($_SESSION['user_id']) || !isset($_SESSION['is_admin']) || $_SESSION['is_admin'] != 1) {
-    header("Location: index.php");
+    header("Location: ./");
     exit;
 }
 
@@ -134,7 +134,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 $active_tab = $_GET['tab'] ?? 'inscricoes';
 $sort = $_GET['sort'] ?? 'id';
 $dir = $_GET['dir'] ?? 'DESC';
-$allowed_cols = ['id', 'nome', 'email', 'turma', 'pago'];
+$allowed_cols = ['id', 'nome', 'email', 'telemovel', 'turma', 'pago'];
 if (!in_array($sort, $allowed_cols)) $sort = 'id';
 if (!in_array($dir, ['ASC', 'DESC'])) $dir = 'DESC';
 
@@ -297,8 +297,8 @@ function sortLink($col, $label, $active_tab) {
         <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
             <div class="logo">EXPO <span>FC26</span></div>
             <div style="display: flex; gap: 1rem;">
-                <a href="index.php" class="btn btn-outline" style="padding: 8px 20px; font-size: 0.8rem; border-radius: 50px;"><i class="fas fa-eye"></i> SITE</a>
-                <a href="logout.php" class="btn" style="background:#ef4444; color:#fff; padding: 8px 20px; font-size: 0.8rem; border-radius: 50px;"><i class="fas fa-power-off"></i> SAIR</a>
+                <a href="./" class="btn btn-outline" style="padding: 8px 20px; font-size: 0.8rem; border-radius: 50px;"><i class="fas fa-eye"></i> SITE</a>
+                <a href="logout" class="btn" style="background:#ef4444; color:#fff; padding: 8px 20px; font-size: 0.8rem; border-radius: 50px;"><i class="fas fa-power-off"></i> SAIR</a>
             </div>
         </div>
     </header>
@@ -335,6 +335,7 @@ function sortLink($col, $label, $active_tab) {
                             <th><?php echo sortLink('id', 'ID', 'inscricoes'); ?></th>
                             <th><?php echo sortLink('nome', 'Nome', 'inscricoes'); ?></th>
                             <th><?php echo sortLink('email', 'E-mail', 'inscricoes'); ?></th>
+                            <th><?php echo sortLink('telemovel', 'Telemóvel', 'inscricoes'); ?></th>
                             <th><?php echo sortLink('turma', 'Turma', 'inscricoes'); ?></th>
                             <th>Ações</th>
                         </tr>
@@ -347,6 +348,7 @@ function sortLink($col, $label, $active_tab) {
                                 <td style="color: var(--accent-color); font-weight: 700;">#<?php echo $row['id']; ?></td>
                                 <td style="color: #fff; font-weight: 600;"><?php echo htmlspecialchars($row['nome']); ?></td>
                                 <td style="color: var(--text-secondary);"><?php echo htmlspecialchars($row['email']); ?></td>
+                                <td style="color: var(--text-secondary);"><?php echo htmlspecialchars($row['telemovel'] ?? '-'); ?></td>
                                 <td><span style="background: rgba(255,255,255,0.05); padding: 5px 12px; border-radius: 6px; font-size: 0.8rem;"><?php echo htmlspecialchars($row['turma']); ?></span></td>
                                 <td>
                                     <form method="POST">

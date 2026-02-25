@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once "db_connect.php";
+require_once "config.php";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = htmlspecialchars($_POST['email']);
@@ -21,7 +21,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Handle Admin Status safely
             $_SESSION['is_admin'] = isset($user['is_admin']) && $user['is_admin'] == 1;
 
-            header("Location: index.php");
+            header("Location: ./");
             exit;
         } else {
             $error = "A password está incorreta.";
@@ -55,10 +55,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <button type="submit" class="btn form-submit">Entrar</button>
         </form>
         <p style="text-align: center; margin-top: 1rem; color: var(--text-secondary);">
-            Ainda não tens conta? <a href="register.php" style="color: var(--accent-color);">Registar</a>
+            Ainda não tens conta? <a href="register" style="color: var(--accent-color);">Registar</a>
         </p>
         <p style="text-align: center; margin-top: 1rem;">
-            <a href="index.php" style="color: var(--text-secondary); font-size: 0.9rem;">Voltar ao site</a>
+            <a href="./" style="color: var(--text-secondary); font-size: 0.9rem;">Voltar ao site</a>
         </p>
     </div>
 </body>

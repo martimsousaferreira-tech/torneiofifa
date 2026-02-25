@@ -19,12 +19,14 @@
     box-sizing: border-box;
 }
 
-body {
+html, body {
     background-color: var(--bg-dark);
     color: var(--text-primary);
     font-family: 'Outfit', sans-serif;
     line-height: 1.6;
     overflow-x: hidden;
+    width: 100%;
+    position: relative;
 }
 
 h1, h2, h3, h4 {
@@ -58,8 +60,11 @@ section {
 }
 
 @media (max-width: 991px) {
+    .container {
+        padding: 0 1.5rem;
+    }
     header .container {
-        padding: 0 2rem;
+        padding: 0 1.75rem;
     }
 }
 
@@ -1159,7 +1164,7 @@ select.form-control {
 
 .live-info {
     flex: 1;
-    min-width: 300px;
+    min-width: 260px;
 }
 
 .live-badge {
@@ -1198,7 +1203,7 @@ select.form-control {
 
 .live-preview {
     flex: 1;
-    min-width: 300px;
+    min-width: 260px;
     aspect-ratio: 16/9;
 }
 
@@ -1764,7 +1769,7 @@ footer {
 /* New Calendar Styles */
 .calendar-grid-wrapper {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 2rem;
     max-width: 1000px;
     margin: 0 auto;
@@ -1904,9 +1909,10 @@ section:nth-child(odd)::before { bottom: -100px; right: -100px; }
 }
 
 @media (max-width: 900px) {
-    .prizes-grid { flex-direction: column; align-items: center; }
-    .prize-card.winner { order: 1; }
-    .prize-card { order: 2 !important; }
+    .prizes-grid { flex-direction: column; align-items: center; gap: 3rem; }
+    .prize-card.winner { order: 1; transform: scale(1.05); }
+    .prize-card.winner:hover { transform: translateY(-10px) scale(1.05); }
+    .prize-card { order: 2 !important; width: 100%; max-width: 300px; }
 }
 
 /* Tournament Form */

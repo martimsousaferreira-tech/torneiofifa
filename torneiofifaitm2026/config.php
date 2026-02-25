@@ -3,7 +3,7 @@ $servername = "shortline.proxy.rlwy.net"; // host público do Railway
 $port       = 52908;                       // porta pública
 $username   = "root";                       // user da DB
 $password   = "HUarSvHYQiPxsSAkNjkQCeJELPBiteou"; // password da DB
-$dbname     = "railway";                    // nome da DB
+$dbname     = "torneiofifa";                    // nome da DB
 
 $conn = new mysqli($servername, $username, $password, $dbname, $port);
 

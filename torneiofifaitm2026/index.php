@@ -1,6 +1,6 @@
 <?php 
 session_start(); 
-require_once "db_connect.php"; 
+require_once "config.php"; 
 ?>
 <!DOCTYPE html>
 <html lang="pt-PT">
@@ -8,6 +8,8 @@ require_once "db_connect.php";
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Torneio Expo FC26 - XXIX EXPOCOLGAIA</title>
+    <meta name="description" content="Participa no Torneio Expo FC26 na XXIX EXPOCOLGAIA. Compete com os melhores jogadores no Colégio Gaia e ganha prémios incríveis!">
+    <meta name="keywords" content="FC26, Torneio FIFA, EXPOCOLGAIA, Colégio Gaia, ITM, Gaming">
     <link rel="stylesheet" href="css/style.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -40,20 +42,20 @@ require_once "db_connect.php";
                         <a href="#premios" onclick="toggleMenu()">Prémios</a>
                         <a href="#classificacoes" onclick="toggleMenu()">Brackets</a>
                         <a href="#calendario" onclick="toggleMenu()">Calendário</a>
-                        <a href="https://www.twitch.tv" target="_blank" style="color: #9146ff;"><i class="fab fa-twitch"></i> Live <span class="live-dot"></span></a>
+                        <a href="https://www.twitch.tv/torneioitm" target="_blank" style="color: #9146ff;"><i class="fab fa-twitch"></i> Live <span class="live-dot"></span></a>
                     </div>
                     <?php if(isset($_SESSION['user_id'])): ?>
                         <div class="user-pill-container" style="display: flex; gap: 0.8rem; align-items: center;">
                             <?php if(isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1): ?>
-                                <a href="backoffice.php" class="btn-admin-nav" title="Painel de Controlo"><i class="fas fa-terminal"></i></a>
+                                <a href="backoffice" class="btn-admin-nav" title="Painel de Controlo"><i class="fas fa-terminal"></i></a>
                             <?php endif; ?>
                             <div class="user-menu-pill">
                                 <span class="user-name-label">Olá, <?php echo htmlspecialchars(explode(' ', $_SESSION['user_name'])[0]); ?></span>
-                                <a href="logout.php" class="btn-logout-circle" title="Terminar Sessão"><i class="fas fa-power-off"></i></a>
+                                <a href="logout" class="btn-logout-circle" title="Terminar Sessão"><i class="fas fa-power-off"></i></a>
                             </div>
                         </div>
                     <?php else: ?>
-                        <a href="login.php" class="btn btn-login">Login / Registar</a>
+                        <a href="login" class="btn btn-login">Login / Registar</a>
                     <?php endif; ?>
                 </div>
             </nav>
@@ -86,7 +88,7 @@ require_once "db_connect.php";
             <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
                 <a href="#regulamento" class="btn btn-login"><span>Saber Mais</span></a>
                 <?php if(!isset($_SESSION['user_id'])): ?>
-                    <a href="login.php" class="btn btn-outline"><span>Criar Conta</span></a>
+                    <a href="login" class="btn btn-outline"><span>Criar Conta</span></a>
                 <?php else: ?>
                     <a href="#inscricao" class="btn btn-outline"><span>Inscrever Agora</span></a>
                 <?php endif; ?>
@@ -110,17 +112,17 @@ require_once "db_connect.php";
                 <div class="rule-card">
                     <div class="rule-icon"><i class="fas fa-sitemap"></i></div>
                     <h3>Eliminatória Direta</h3>
-                    <p>Sorteio de 32 jogadores em sistema de eliminatória única (bracket). Perdeu, está fora da competição.</p>
+                    <p>Sorteio de 32 jogadores em sistema de eliminatória única (bracket). Perdeu, estás fora da competição.</p>
                 </div>
                 <div class="rule-card">
                     <div class="rule-icon"><i class="fas fa-clock"></i></div>
                     <h3>Duração de 10m</h3>
-                    <p>Cada jogo terá a duração de 10 minutos (5m por parte). Intervalos de 1 minuto entre partes.</p>
+                    <p>Cada partida será realizada no modo offline, com 4 minutos por parte. Em caso de empate, o jogo será decidido por penáltis.</p>
                 </div>
                 <div class="rule-card">
                     <div class="rule-icon"><i class="fas fa-vr-cardboard"></i></div>
                     <h3>Configurações</h3>
-                    <p>Velocidade de jogo normal, câmara 'Telebroadcast' e defesa tática obrigatória.</p>
+                    <p>Cada jogador deverá escolher uma equipa de um clube real e as equipas terão um rating de 95 (sendo proibidas seleções nacionais).</p>
                 </div>
                 <div class="rule-card">
                     <div class="rule-icon"><i class="fas fa-fist-raised"></i></div>
@@ -150,12 +152,19 @@ require_once "db_connect.php";
                         </a>
                     </div>
                 </div>
-                <div class="live-player-mock">
-                    <div class="player-overlay">
-                        <i class="fab fa-twitch"></i>
-                        <span>A transmitir em breve...</span>
-                    </div>
+                <div class="live-player-wrapper" style="box-shadow: 0 0 50px rgba(145, 70, 255, 0.2); border-radius: 15px; overflow: hidden;">
+                    <div id="twitch-embed"></div>
                 </div>
+                <script src="https://embed.twitch.tv/embed/v1.js"></script>
+                <script type="text/javascript">
+                  new Twitch.Embed("twitch-embed", {
+                    width: "100%",
+                    height: 480,
+                    channel: "torneioitm",
+                    layout: "video",
+                    parent: [window.location.hostname]
+                  });
+                </script>
             </div>
         </div>
     </section>
@@ -168,17 +177,17 @@ require_once "db_connect.php";
                 <div class="prize-card">
                     <div class="prize-icon"><i class="fas fa-medal" style="color: #cd7f32;"></i></div>
                     <h3>3º Lugar</h3>
-                    <p>Prémio Surpresa EXPOCOLGAIA</p>
+                    <p>Cartão Presente 10€</p>
                 </div>
                 <div class="prize-card winner">
                     <div class="prize-icon"><i class="fas fa-trophy" style="color: #ffd700; font-size: 4rem;"></i></div>
                     <h3 style="font-size: 2rem;">1º Lugar</h3>
-                    <p style="font-size: 1.2rem; font-weight: 700;">Cartão Presente + Troféu</p>
+                    <p style="font-size: 1.2rem; font-weight: 700;">Cartão Presente 50€</p>
                 </div>
                 <div class="prize-card">
                     <div class="prize-icon"><i class="fas fa-medal" style="color: #c0c0c0;"></i></div>
                     <h3>2º Lugar</h3>
-                    <p>Auscultadores Gaming</p>
+                    <p>Cartão Presente 25€</p>
                 </div>
             </div>
         </div>
@@ -261,9 +270,13 @@ require_once "db_connect.php";
                                         <option value="TSI">TSI</option>
                                     </select>
                                 </div>
-                                <div class="form-group fg-span-2">
-                                    <label>Número de Aluno</label>
-                                    <input type="number" name="numero" placeholder="Ex: 5" required>
+                                <div class="form-group">
+                                    <label>Número de Aluno (1-30)</label>
+                                    <input type="number" name="numero" placeholder="Ex: 5" min="1" max="30" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Telemóvel</label>
+                                    <input type="tel" name="telemovel" placeholder="9xxxxxxxx" pattern="[0-9]{9}" required title="Deve conter 9 dígitos">
                                 </div>
                                 <div class="form-group fg-span-2" style="display: flex; flex-direction: row; align-items: center; gap: 10px; cursor: pointer;">
                                     <input type="checkbox" id="agree_rules" name="agree_rules" required style="width: 20px; height: 20px; accent-color: var(--accent-color);">
@@ -292,7 +305,7 @@ require_once "db_connect.php";
                 <?php else: ?>
                     <div style="text-align: center; padding: 3rem; background: rgba(255,255,255,0.02); border: 1px dashed var(--glass-border); border-radius: 20px;">
                         <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Precisas de ter conta para te inscreveres no torneio.</p>
-                        <a href="login.php" class="btn btn-outline">Fazer Login / Criar Conta</a>
+                        <a href="login" class="btn btn-outline">Fazer Login / Criar Conta</a>
                     </div>
                 <?php endif; ?>
             <?php endif; ?>
@@ -484,7 +497,7 @@ require_once "db_connect.php";
                 </div>
                 <div class="faq-item">
                     <div class="faq-question">Posso escolher qualquer equipa? <i class="fas fa-plus"></i></div>
-                    <div class="faq-answer">Sim, podes escolher qualquer clube ou seleção disponível no jogo (modo Kick-off), sendo que todas as equipas vão ter um rating de 95.</div>
+                    <div class="faq-answer">Sim, podes escolher qualquer clube (menos seleções) disponível no jogo (modo Kick-off), sendo que todas as equipas vão ter um rating de 95.</div>
                 </div>
                 <div class="faq-item">
                     <div class="faq-question">Onde se realiza o torneio? <i class="fas fa-plus"></i></div>
@@ -528,7 +541,7 @@ require_once "db_connect.php";
             </p>
             <div class="social-links" style="justify-content: center; margin-bottom: 2rem;">
                 <a href="#"><i class="fab fa-instagram"></i></a>
-                <a href="#"><i class="fab fa-twitch"></i></a>
+                <a href="https://www.twitch.tv/torneioitm" target="_blank"><i class="fab fa-twitch"></i></a>
             </div>
             <p style="color: #444; font-size: 0.8rem;">&copy; 2026 12ºITM. Todos os direitos reservados.</p>
         </div>
