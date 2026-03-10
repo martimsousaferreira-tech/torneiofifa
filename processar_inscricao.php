@@ -9,6 +9,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     require_once "config.php";
 
     $nome = isset($_POST['nome']) ? htmlspecialchars($_POST['nome']) : '';
+    $bracket_name = isset($_POST['bracket_name']) ? htmlspecialchars($_POST['bracket_name']) : '';
     $ano = isset($_POST['ano']) ? htmlspecialchars($_POST['ano']) : '';
     $turma_letra = isset($_POST['turma_letra']) ? htmlspecialchars($_POST['turma_letra']) : '';
     $turma = "$ano $turma_letra"; // Combine to store in DB
@@ -22,8 +23,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (!isset($_POST['agree_rules'])) {
         $message = "Precisas de aceitar o regulamento para te inscreveres.";
         $error = true;
-    } elseif (strlen($nome) > 11) {
-        $message = "O nome não pode exceder os 11 caracteres.";
+    } elseif (strlen($bracket_name) > 11) {
+        $message = "O nome no bracket não pode exceder os 11 caracteres.";
+        $error = true;
+    } elseif (empty($nome)) {
+        $message = "O nome completo é obrigatório.";
         $error = true;
     } elseif ($numero < 1 || $numero > 30) {
         $message = "O número de aluno deve estar entre 1 e 30.";
@@ -70,8 +74,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     exit;
                 } else {
                     // Prepare and bind
-                    $stmt = $conn->prepare("INSERT INTO inscricoes (user_id, nome, turma, numero, email, telemovel) VALUES (?, ?, ?, ?, ?, ?)");
-                    $stmt->bind_param("ississ", $user_id, $nome, $turma, $numero, $email, $telemovel);
+                    $stmt = $conn->prepare("INSERT INTO inscricoes (user_id, nome, bracket_name, turma, numero, email, telemovel) VALUES (?, ?, ?, ?, ?, ?, ?)");
+                    
+                    if ($stmt === false) {
+                        die("Erro ao preparar a query: " . $conn->error);
+                    }
+                    
+                    $stmt->bind_param("isssiss", $user_id, $nome, $bracket_name, $turma, $numero, $email, $telemovel);
 
                     if ($stmt->execute()) {
                         $message = "Inscrição realizada com sucesso, $nome!";

@@ -42,7 +42,7 @@ require_once "config.php";
                         <a href="#premios" onclick="toggleMenu()">Prémios</a>
                         <a href="#classificacoes" onclick="toggleMenu()">Brackets</a>
                         <a href="#calendario" onclick="toggleMenu()">Calendário</a>
-                        <a href="https://www.twitch.tv/torneioitm" target="_blank" style="color: #9146ff;"><i class="fab fa-twitch"></i> Live <span class="live-dot"></span></a>
+                        <a href="https://www.youtube.com/@torneioitm" target="_blank" style="color: #ff0000;"><i class="fab fa-youtube"></i> Live <span class="live-dot"></span></a>
                     </div>
                     <?php if(isset($_SESSION['user_id'])): ?>
                         <div class="user-pill-container" style="display: flex; gap: 0.8rem; align-items: center;">
@@ -50,12 +50,15 @@ require_once "config.php";
                                 <a href="backoffice" class="btn-admin-nav" title="Painel de Controlo"><i class="fas fa-terminal"></i></a>
                             <?php endif; ?>
                             <div class="user-menu-pill">
-                                <span class="user-name-label">Olá, <?php echo htmlspecialchars(explode(' ', $_SESSION['user_name'])[0]); ?></span>
+                                <span class="user-name-label">Olá, <?php 
+                                    $nome_completo = $_SESSION['user_name'] ?? 'Utilizador';
+                                    echo htmlspecialchars(explode(' ', $nome_completo)[0]); 
+                                ?></span>
                                 <a href="logout" class="btn-logout-circle" title="Terminar Sessão"><i class="fas fa-power-off"></i></a>
                             </div>
                         </div>
                     <?php else: ?>
-                        <a href="login" class="btn btn-login">Login / Registar</a>
+                        <a href="login" class="btn btn-login">Inscreve-te!</a>
                     <?php endif; ?>
                 </div>
             </nav>
@@ -88,7 +91,7 @@ require_once "config.php";
             <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
                 <a href="#regulamento" class="btn btn-login"><span>Saber Mais</span></a>
                 <?php if(!isset($_SESSION['user_id'])): ?>
-                    <a href="login" class="btn btn-outline"><span>Criar Conta</span></a>
+                    <a href="login" class="btn btn-outline"><span>Inscreve-te!</span></a>
                 <?php else: ?>
                     <a href="#inscricao" class="btn btn-outline"><span>Inscrever Agora</span></a>
                 <?php endif; ?>
@@ -145,26 +148,23 @@ require_once "config.php";
                 <div class="live-content">
                     <span class="live-badge"><i class="fas fa-circle pulse-icon"></i> LIVE STREAM</span>
                     <h2>Acompanha em Direto</h2>
-                    <p>Não percas nenhum golo! Estamos a transmitir os melhores jogos do torneio em direto na Twitch com comentários ao vivo.</p>
+                    <p>Não percas nenhum golo! Estamos a transmitir os melhores jogos do torneio em direto no YouTube com comentários ao vivo.</p>
                     <div class="live-actions">
-                        <a href="https://www.twitch.tv/torneioitm" target="_blank" class="btn btn-twitch">
-                            <i class="fab fa-twitch"></i> Seguir na Twitch
+                        <a href="https://www.youtube.com/@torneioitm" target="_blank" class="btn btn-youtube">
+                            <i class="fab fa-youtube"></i> Seguir no YouTube
                         </a>
                     </div>
                 </div>
-                <div class="live-player-wrapper" style="box-shadow: 0 0 50px rgba(145, 70, 255, 0.2); border-radius: 15px; overflow: hidden;">
-                    <div id="twitch-embed"></div>
+                <div class="live-player-wrapper" style="box-shadow: 0 0 50px rgba(255, 0, 0, 0.2); border-radius: 15px; overflow: hidden; position: relative; padding-bottom: 56.25%; height: 0;">
+                    <iframe 
+                        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;"
+                        src="https://www.youtube.com/embed/live_stream?channel=UCpD6sYmC81G05S4Q047_6Ww" 
+                        title="YouTube live player" 
+                        frameborder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                        allowfullscreen>
+                    </iframe>
                 </div>
-                <script src="https://embed.twitch.tv/embed/v1.js"></script>
-                <script type="text/javascript">
-                  new Twitch.Embed("twitch-embed", {
-                    width: "100%",
-                    height: 480,
-                    channel: "torneioitm",
-                    layout: "video",
-                    parent: [window.location.hostname]
-                  });
-                </script>
             </div>
         </div>
     </section>
@@ -239,8 +239,12 @@ require_once "config.php";
                         <form action="processar_inscricao.php" method="POST" class="tournament-form">
                             <div class="form-grid">
                                 <div class="form-group fg-span-2">
-                                    <label>Nome Completo (Máx 11 chars)</label>
-                                    <input type="text" name="nome" value="<?php echo htmlspecialchars(substr($_SESSION['user_name'], 0, 11)); ?>" maxlength="11" required>
+                                    <label>Nome Completo</label>
+                                    <input type="text" name="nome" value="<?php echo htmlspecialchars($_SESSION['user_name'] ?? ''); ?>" required>
+                                </div>
+                                <div class="form-group fg-span-2">
+                                    <label>Nome no Bracket (Máx 11 chars)</label>
+                                    <input type="text" name="bracket_name" value="<?php echo htmlspecialchars(substr($_SESSION['user_name'] ?? '', 0, 11)); ?>" maxlength="11" required>
                                 </div>
                                 <div class="form-group">
                                     <label>Ano</label>
@@ -305,7 +309,7 @@ require_once "config.php";
                 <?php else: ?>
                     <div style="text-align: center; padding: 3rem; background: rgba(255,255,255,0.02); border: 1px dashed var(--glass-border); border-radius: 20px;">
                         <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Precisas de ter conta para te inscreveres no torneio.</p>
-                        <a href="login" class="btn btn-outline">Fazer Login / Criar Conta</a>
+                        <a href="login" class="btn btn-outline">Inscreve-te!</a>
                     </div>
                 <?php endif; ?>
             <?php endif; ?>
@@ -325,7 +329,9 @@ require_once "config.php";
                 <div class="mobile-scroll-hint"><i class="fas fa-arrows-left-right"></i> Desliza para ver o bracket completo</div>
                 
                 <?php
-                $res = $conn->query("SELECT m.*, p1.nome as p1_nome, p2.nome as p2_nome 
+                $res = $conn->query("SELECT m.*, 
+                                            IF(p1.bracket_name IS NULL OR p1.bracket_name = '', p1.nome, p1.bracket_name) as p1_nome, 
+                                            IF(p2.bracket_name IS NULL OR p2.bracket_name = '', p2.nome, p2.bracket_name) as p2_nome 
                                     FROM matches m 
                                     LEFT JOIN inscricoes p1 ON m.player1_id = p1.id 
                                     LEFT JOIN inscricoes p2 ON m.player2_id = p2.id 
@@ -368,10 +374,6 @@ require_once "config.php";
                         
                         $p1_display = htmlspecialchars($p1_nome);
                         $p2_display = htmlspecialchars($p2_nome);
-                        
-                        // Shorten names for the bracket display
-                        if(strlen($p1_display) > 11) $p1_display = substr($p1_display, 0, 10) . '.';
-                        if(strlen($p2_display) > 11) $p2_display = substr($p2_display, 0, 10) . '.';
 
                         $html = '<div class="match-box ' . ($m ? '' : 'empty') . '">';
                         $html .= '<div class="match-number">#' . $num . '</div>';
@@ -540,8 +542,8 @@ require_once "config.php";
                 Organizado pelos alunos do 12º ano de ITM do Colégio Gaia para a XXIX EXPOCOLGAIA.
             </p>
             <div class="social-links" style="justify-content: center; margin-bottom: 2rem;">
-                <a href="#"><i class="fab fa-instagram"></i></a>
-                <a href="https://www.twitch.tv/torneioitm" target="_blank"><i class="fab fa-twitch"></i></a>
+                <a href="https://www.instagram.com/torneio.itm/"><i class="fab fa-instagram"></i></a>
+                <a href="https://www.youtube.com/@torneioitm" target="_blank"><i class="fab fa-youtube"></i></a>
             </div>
             <p style="color: #444; font-size: 0.8rem;">&copy; 2026 12ºITM. Todos os direitos reservados.</p>
         </div>
